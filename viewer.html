@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FFX Runner — asset viewer</title>
+<style>
+  :root { color-scheme: dark; }
+  html,body { margin:0; height:100%; background:#10131a; font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; color:#cfd6e4; }
+  canvas { display:block; }
+  #hud { position:fixed; top:10px; left:10px; background:#0b0e14cc; border:1px solid #2a3142;
+         border-radius:8px; padding:10px 12px; pointer-events:none; white-space:pre; }
+  #hud b { color:#ffd166; font-weight:600; }
+  #keys { position:fixed; bottom:10px; left:10px; background:#0b0e14cc; border:1px solid #2a3142;
+          border-radius:8px; padding:8px 12px; color:#8c96ab; }
+</style>
+</head>
+<body>
+<div id="hud">зареждане…</div>
+<div id="keys">ляв бутон = въртене · десен = местене · колело = зум</div>
+
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const hud = document.getElementById('hud');
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87a7c7);
+scene.fog = new THREE.Fog(0x87a7c7, 200, 600);
+
+const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 3000);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+scene.add(new THREE.HemisphereLight(0xdfe9f5, 0x484436, 2.2));
+const sun = new THREE.DirectionalLight(0xfff3dd, 1.8);
+sun.position.set(60, 120, 40);
+scene.add(sun);
+
+const loader = new GLTFLoader();
+const stats = { objects: 0, tris: 0, materials: new Set(), textures: new Set() };
+
+function tally(root) {
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    stats.objects++;
+    const g = o.geometry;
+    stats.tris += (g.index ? g.index.count : g.attributes.position.count) / 3;
+    for (const m of [].concat(o.material)) {
+      if (!m) continue;
+      stats.materials.add(m.uuid);
+      if (m.map) stats.textures.add(m.map.uuid);
+      m.side = THREE.DoubleSide;
+    }
+  });
+}
+
+function report(extra = '') {
+  const b = new THREE.Box3().setFromObject(scene);
+  const s = b.getSize(new THREE.Vector3());
+  hud.innerHTML =
+    `<b>FFX Runner — assets</b>\n` +
+    `меша      ${stats.objects}\n` +
+    `триъгълн. ${Math.round(stats.tris).toLocaleString('bg')}\n` +
+    `материали ${stats.materials.size}\n` +
+    `текстури  ${stats.textures.size}\n` +
+    `размер    ${s.x.toFixed(0)} × ${s.z.toFixed(0)} × ${s.y.toFixed(0)}\n` + extra;
+}
+
+const load = url => new Promise((res, rej) => loader.load(url, res, undefined, rej));
+
+Promise.all([load('assets/world.glb'), load('assets/cars.glb')]).then(([world, cars]) => {
+  scene.add(world.scene);
+  tally(world.scene);
+
+  // Разпъваме колите в редица встрани от града, за да се виждат поотделно.
+  const box = new THREE.Box3().setFromObject(world.scene);
+  let i = 0;
+  for (const child of [...cars.scene.children]) {
+    child.position.set(box.min.x - 12, box.min.y, box.min.z + i * 6);
+    scene.add(child);
+    i++;
+  }
+  tally(cars.scene);
+
+  const c = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3()).length();
+  camera.position.set(c.x + size * 0.35, c.y + size * 0.35, c.z + size * 0.45);
+  controls.target.copy(c);
+  controls.update();
+  report(`коли      ${i}`);
+}).catch(e => { hud.textContent = 'ГРЕШКА: ' + e.message; console.error(e); });
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+</script>
+</body>
+</html>

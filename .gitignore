@@ -1,0 +1,11 @@
+# Клонингът на оригиналното репо (https://github.com/OfficinePixel/ffx_runner) и
+# декомпилираните скриптове не са част от порта; тежките междинни файлове на инструментите също.
+source/
+decompiled/
+tools/esrgan/
+tools/upscaled/
+tools/shots/
+dist/
+.wrangler/
+node_modules/
+.DS_Store
