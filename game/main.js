@@ -5,37 +5,38 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { World } from './world.js?v=163';
-import { PlayerCar } from './car.js?v=163';
-import { Chaser } from './chaser.js?v=163';
-import { Ambusher } from './ambusher.js?v=163';
-import { StreetDriver } from './driver.js?v=163';
-import { Trail } from './trail.js?v=163';
-import { makeShadow, updateShadow } from './shadow.js?v=163';
-import { Particles } from './particles.js?v=163';
-import { Sequence } from './sequence.js?v=163';
-import { ChaseCamera } from './camera.js?v=163';
-import { Hud, BUILD } from './hud.js?v=163';
-import { Engine } from './audio.js?v=163';
-import { BONUSES } from './data.js?v=163';
-import { addOriginal, stepBarriers } from './original.js?v=163';
-import { Look } from './look.js?v=163';
-import { Effects } from './effects.js?v=163';
-import { Ghost } from './ghost.js?v=163';
-import { Minimap } from './minimap.js?v=163';
-import { settings, pauseMenu } from './settings.js?v=163';
-import { bindTouch } from './touch.js?v=163';
-import { Atmosphere } from './atmosphere.js?v=163';
-import { addLights } from './lights.js?v=163';
-import { buildSkyline } from './skyline.js?v=163';
-import { applyRelief } from './relief.js?v=163';
-import { buildFacadeDetails } from './facade.js?v=163';
-import { buildTheatre } from './theatre.js?v=163';
-import { applyNormals, applyGroundDetail } from './normals.js?v=163';
+import { World } from './world.js?v=165';
+import { PlayerCar } from './car.js?v=165';
+import { Chaser } from './chaser.js?v=165';
+import { Ambusher } from './ambusher.js?v=165';
+import { StreetDriver } from './driver.js?v=165';
+import { Trail } from './trail.js?v=165';
+import { makeShadow, updateShadow } from './shadow.js?v=165';
+import { Particles } from './particles.js?v=165';
+import { Sequence } from './sequence.js?v=165';
+import { ChaseCamera } from './camera.js?v=165';
+import { Hud, BUILD } from './hud.js?v=165';
+import { Engine } from './audio.js?v=165';
+import { BONUSES } from './data.js?v=165';
+import { addOriginal, stepBarriers } from './original.js?v=165';
+import { Look } from './look.js?v=165';
+import { Effects } from './effects.js?v=165';
+import { Ghost } from './ghost.js?v=165';
+import { Minimap } from './minimap.js?v=165';
+import { settings, pauseMenu } from './settings.js?v=165';
+import { bindTouch } from './touch.js?v=165';
+import { Atmosphere } from './atmosphere.js?v=165';
+import { addLights } from './lights.js?v=165';
+import { buildSkyline } from './skyline.js?v=165';
+import { applyRelief } from './relief.js?v=165';
+import { buildFacadeDetails } from './facade.js?v=165';
+import { buildTheatre } from './theatre.js?v=165';
+import { applyNormals, applyGroundDetail } from './normals.js?v=165';
+import { t } from './i18n.js?v=165';
 import {
   TIMESTEP, FUEL_MAX, BODY_MAX, FUEL_BONUS, BODY_BONUS,
   START_DELAY_MS, BONUS_HEIGHT, BONUS_RADIUS, WORLD_SCALE, CAMERA, RESTITUTION, NITRO,
-} from './params.js?v=163';
+} from './params.js?v=165';
 
 const state = {
   fuel: FUEL_MAX,
@@ -80,7 +81,7 @@ boot().catch(err => {
 async function boot() {
   console.log('FFX Runner — версия', BUILD);
   checkVersion();
-  hud.status('зареждане на света…');
+  hud.status(t('loadingWorld'));
   const world = await new World().load('assets/world.glb');
   scene.add(world.root);
   look.sharpen(world.root);
@@ -104,7 +105,7 @@ async function boot() {
     console.warn('липсват в .glb:', world.missing);
   }
 
-  hud.status('зареждане на колите…');
+  hud.status(t('loadingCars'));
   const cars = await new GLTFLoader().loadAsync('assets/cars.glb');
   look.polishCars(cars.scene);
 
@@ -205,7 +206,9 @@ async function boot() {
     route && route.points);
   look.aoIgnore.push(...lights.glowObjects, atmosphere.rain, atmosphere.stars);
   const buildNote = document.getElementById('pause-build');
-  if (buildNote) buildNote.textContent = `версия ${BUILD}`;
+  const showBuild = () => { if (buildNote) buildNote.textContent = t('version') + BUILD; };
+  showBuild();
+  addEventListener('ffx-lang', showBuild);
   const menu = pauseMenu(s => {
     const preset = atmosphere.set(s.time, s.weather);
     look.setBloom(preset.bloom);

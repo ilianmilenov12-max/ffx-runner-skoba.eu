@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bg">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <!-- Apache в контейнера е с AllowOverride None и не може да прати заглавки,
@@ -9,7 +9,15 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FFX Runner</title>
+<title>FFX Runner: the Shockwave classic, playable again</title>
+<meta name="description" content="FFX Runner by Officine Pixel, the mid-2000s Shockwave 3D car chase, ported to the modern browser with Three.js. No plugins, plays on desktop and phone.">
+<link rel="canonical" href="https://ffx.skoba.eu/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ffx.skoba.eu/">
+<meta property="og:title" content="FFX Runner: the Shockwave classic, playable again">
+<meta property="og:description" content="The mid-2000s Shockwave 3D car chase by Officine Pixel, back in the browser. No plugins.">
+<meta property="og:image" content="https://ffx.skoba.eu/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -79,6 +87,10 @@
                    animation: blink 1.4s steps(2, start) infinite; }
   @keyframes blink { 50% { opacity: .25; } }
   #splash .records { margin-top: 8px; color: #93a0b8; font-size: 12px; }
+  #splash .credits { margin-top: 14px; padding: 0 16px; text-align: center; color: #6d7891; font-size: 11px; }
+  #splash .credits a, #splash .lang a { color: #93a0b8; }
+  #splash .credits a:hover, #splash .lang a:hover { color: #ffd166; }
+  #splash .lang { margin-top: 6px; font-size: 12px; }
 
   #howto { position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
            background: #0a0d13ee; pointer-events: auto; cursor: pointer; }
@@ -175,11 +187,11 @@
 <div id="hud">
   <div class="gauge fuel" id="fuel-bar">
     <img src="assets/ui/DisplayRicarica.png" class="off" alt="">
-    <img src="assets/ui/DisplayRicarica.png" class="fill" id="fuel-fill" alt="гориво">
+    <img src="assets/ui/DisplayRicarica.png" class="fill" id="fuel-fill" alt="fuel" data-i18n-alt="alt.fuel">
   </div>
   <div class="gauge body" id="body-bar">
     <img src="assets/ui/DisplayDanni3.png" class="off" alt="">
-    <img src="assets/ui/DisplayDanni3.png" class="fill" id="body-fill" alt="каросерия">
+    <img src="assets/ui/DisplayDanni3.png" class="fill" id="body-fill" alt="body" data-i18n-alt="alt.body">
   </div>
 
   <div id="timer"><div class="now" id="timer-now">00:00.00</div><div class="best" id="timer-best"></div><div class="nitro" id="nitro"></div></div>
@@ -190,26 +202,24 @@
   <div id="splash">
     <div class="sheet43">
       <img id="splash-img" src="assets/ui/loading.png" alt="FFX Runner">
-      <button class="hit" id="btn-play" aria-label="Играй" hidden
+      <button class="hit" id="btn-play" aria-label="Play" data-i18n-aria="aria.play" hidden
               style="left:28%; top:62%; width:44%; height:10%;"></button>
-      <button class="hit" id="btn-howto" aria-label="Как се играе" hidden
+      <button class="hit" id="btn-howto" aria-label="How to play" data-i18n-aria="aria.howto" hidden
               style="left:28%; top:73.5%; width:44%; height:9.5%;"></button>
     </div>
-    <div class="press" id="splash-press">моля, изчакай…</div>
+    <div class="press" id="splash-press" data-i18n="wait">please wait…</div>
     <div class="records" id="splash-records"></div>
+    <div class="credits" data-i18n="credits"></div>
+    <div class="lang" data-i18n="switchLang"></div>
   </div>
 
   <div id="howto">
     <div class="box">
-      <h3>Как се играе</h3>
-      <p>Бягаш с колата през града, а колите на противника те гонят и причакват. Пътят е две обиколки:
-         първия път прелезът пред теб се затваря и завиваш на север през тунела; втория път минаваш
-         през прелеза, заобикаляш камиона и се надбягваш с последната бариера, преди влакът да те затвори.</p>
-      <p><kbd>↑</kbd> газ · <kbd>↓</kbd> заден ход, а при скорост — ръчна спирачка · <kbd>←</kbd><kbd>→</kbd> завиване ·
-         <kbd>интервал</kbd> спирачка · <kbd>Shift</kbd> нитро · <kbd>P</kbd> пауза и настройки · <kbd>R</kbd> отначало</p>
-      <p>Бидоните пълнят горивото и нитрото, гаечните ключове оправят каросерията.
-         Жълтата линия на картата горе вдясно показва пътя.</p>
-      <div class="back">натисни, за да се върнеш</div>
+      <h3 data-i18n="howtoTitle"></h3>
+      <p data-i18n="howto1"></p>
+      <p data-i18n="howto2"></p>
+      <p data-i18n="howto3"></p>
+      <div class="back" data-i18n="howtoBack"></div>
     </div>
   </div>
 
@@ -221,16 +231,16 @@
     <div class="sheet43">
       <img src="assets/ui/punteggio2.png" alt="">
       <div class="panel" style="left:4%; top:4%; width:42%; height:18%;">
-        <small>остатък</small><div id="c-fuel"></div><div id="c-body"></div>
+        <small data-i18n="over.left"></small><div id="c-fuel"></div><div id="c-body"></div>
       </div>
       <div class="panel right" style="left:54%; top:4%; width:42%; height:18%;">
-        <small>събрани</small><div id="c-fuelbonus"></div><div id="c-repair"></div>
+        <small data-i18n="over.collected"></small><div id="c-fuelbonus"></div><div id="c-repair"></div>
       </div>
       <div class="panel" style="left:4%; top:28%; width:42%; height:16%;">
-        <small>време</small><b class="big" id="c-time"></b>
+        <small data-i18n="over.time"></small><b class="big" id="c-time"></b>
       </div>
       <div class="panel right" style="left:54%; top:28%; width:42%; height:16%;">
-        <small>точки</small><b class="big" id="over-points"></b>
+        <small data-i18n="over.score"></small><b class="big" id="over-points"></b>
       </div>
       <div class="panel record" id="c-besttime" style="left:4%; top:54%; width:42%; height:16%;"></div>
       <div class="panel record right" id="c-bestpoints" style="left:54%; top:54%; width:42%; height:16%;"></div>
@@ -240,7 +250,7 @@
 
   <div id="pause">
     <div class="box">
-      <h3>Пауза</h3>
+      <h3 data-i18n="pauseTitle"></h3>
       <button data-setting="time"></button>
       <button data-setting="weather"></button>
       <button data-setting="quality"></button>
@@ -250,9 +260,10 @@
       <button data-setting="ghost"></button>
       <button data-setting="map"></button>
       <button data-setting="difficulty"></button>
+      <button data-setting="lang"></button>
       <p class="note" id="pause-note"></p>
       <p class="note" id="pause-build"></p>
-      <div class="row"><button id="pause-resume">Продължи</button><button id="pause-restart">Отначало</button></div>
+      <div class="row"><button id="pause-resume" data-i18n="resume"></button><button id="pause-restart" data-i18n="restart"></button></div>
     </div>
   </div>
 
@@ -261,16 +272,12 @@
     <button class="right" data-key="right">▶</button>
     <button class="gas" data-key="forward">▲</button>
     <button class="back" data-key="backward">▼</button>
-    <button class="brake" data-key="brake">спирачка</button>
+    <button class="brake" data-key="brake" data-i18n="brake"></button>
     <button class="nitro" data-key="nitro">N</button>
     <button class="pause" id="touch-pause">❚❚</button>
   </div>
 
-  <div id="keys">
-    <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> кормуване ·
-    <kbd>интервал</kbd> спирачка · <kbd>Shift</kbd> нитро ·
-    <kbd>P</kbd> пауза и настройки · <kbd>R</kbd> отначало · <kbd>D</kbd> диагностика
-  </div>
+  <div id="keys" data-i18n="keys"></div>
 </div>
 
 <script type="importmap">
@@ -279,7 +286,7 @@
     "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
 } }
 </script>
-<script type="module" src="game/main.js?v=163"></script>
+<script type="module" src="game/main.js?v=165"></script>
 <script>
   addEventListener('keydown', e => {
     if (e.key === 'd' || e.key === 'D') document.getElementById('debug').classList.toggle('on');

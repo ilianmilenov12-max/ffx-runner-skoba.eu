@@ -3,25 +3,27 @@
 // числата в params.js още при зареждането на модула — преди те да бъдат
 // прочетени — затова смяната ѝ важи от следващото бягане.
 
-import { CPU, DAMAGE, NITRO } from './params.js?v=163';
+import { CPU, DAMAGE, NITRO } from './params.js?v=165';
+import { lang, setLang, t } from './i18n.js?v=165';
 
 const KEY = 'ffx-settings';
 const DEFAULTS = {
   time: 'day', weather: 'clear', quality: 'high', relief: true,
   blur: true, fog: true, ghost: true, map: true, difficulty: 'normal',
 };
+// Надписите са в i18n.js: 'val.day', 'val.sunset'…
 const CYCLES = {
-  time: [['day', 'ден'], ['sunset', 'залез'], ['night', 'нощ']],
-  weather: [['clear', 'ясно'], ['rain', 'дъжд']],
-  quality: [['high', 'високо'], ['low', 'ниско']],
+  time: ['day', 'sunset', 'night'],
+  weather: ['clear', 'rain'],
+  quality: ['high', 'low'],
 };
 
 // „Нормално" е играта, както е сега. Разликите са в щетите от удар с кола,
 // в това колко бързо джипът излиза до теб и в зарядите нитро.
 export const DIFFICULTY = {
-  easy: { label: 'лесно', cpu: 1.2, cpuMax: 10, catchUp: 5, nitro: 5 },
-  normal: { label: 'нормално', cpu: 2, cpuMax: 20, catchUp: 10, nitro: 3 },
-  hard: { label: 'трудно', cpu: 2.5, cpuMax: 30, catchUp: 14, nitro: 2 },
+  easy: { cpu: 1.2, cpuMax: 10, catchUp: 5, nitro: 5 },
+  normal: { cpu: 2, cpuMax: 20, catchUp: 10, nitro: 3 },
+  hard: { cpu: 2.5, cpuMax: 30, catchUp: 14, nitro: 2 },
 };
 const ORDER = ['easy', 'normal', 'hard'];
 
@@ -44,17 +46,6 @@ const applied = DIFFICULTY[settings.difficulty] ? settings.difficulty : 'normal'
   NITRO.max = Math.max(NITRO.max, d.nitro);
 }
 
-const LABELS = {
-  time: 'време на деня',
-  weather: 'време',
-  quality: 'графика',
-  relief: 'релеф по сградите',
-  blur: 'размазване при скорост',
-  fog: 'мъгла в далечината',
-  ghost: 'призрак на рекорда',
-  map: 'мини карта',
-  difficulty: 'трудност',
-};
 
 /** Менюто в паузата. `apply` получава настройките при всяка промяна. */
 export function pauseMenu(apply, { onResume, onRestart }) {
@@ -65,22 +56,24 @@ export function pauseMenu(apply, { onResume, onRestart }) {
   const render = () => {
     for (const b of buttons) {
       const k = b.dataset.setting;
-      const value = k === 'difficulty'
-        ? DIFFICULTY[settings.difficulty].label
-        : CYCLES[k] ? (CYCLES[k].find(([v]) => v === settings[k]) || CYCLES[k][0])[1]
-        : settings[k] ? 'вкл.' : 'изкл.';
-      b.innerHTML = `<span>${LABELS[k]}</span><b>${value}</b>`;
+      const value = k === 'lang' ? t('val.' + lang)
+        : k === 'difficulty' ? t('val.' + settings.difficulty)
+        : CYCLES[k] ? t('val.' + (CYCLES[k].includes(settings[k]) ? settings[k] : CYCLES[k][0]))
+        : settings[k] ? t('on') : t('off');
+      b.innerHTML = `<span>${t('set.' + k)}</span><b>${value}</b>`;
     }
-    note.textContent = settings.difficulty !== applied ? 'трудността важи от следващото бягане (R)' : '';
+    note.textContent = settings.difficulty !== applied ? t('difficultyNext') : '';
   };
 
   for (const b of buttons) {
     b.addEventListener('click', () => {
       const k = b.dataset.setting;
+      // езикът не е настройка на играта: пази се отделно (i18n.js)
+      if (k === 'lang') { setLang(lang === 'en' ? 'bg' : 'en'); render(); return; }
       if (k === 'difficulty') {
         settings.difficulty = ORDER[(ORDER.indexOf(settings.difficulty) + 1) % ORDER.length];
       } else if (CYCLES[k]) {
-        const list = CYCLES[k].map(([v]) => v);
+        const list = CYCLES[k];
         settings[k] = list[(list.indexOf(settings[k]) + 1) % list.length];
       } else {
         settings[k] = !settings[k];

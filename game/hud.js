@@ -11,7 +11,8 @@ const BLINK_FRACTION = 1 / 5;   // powerBlink / energyBlink в Overlay.ls
 // Версията от адреса на модула — показва се в диагностиката, за да се вижда
 // веднага дали браузърът не сервира стар кеширан файл.
 export const BUILD = new URL(import.meta.url).searchParams.get('v') || '?';
-import { NITRO } from './params.js?v=163';
+import { NITRO } from './params.js?v=165';
+import { t, num } from './i18n.js?v=165';
 
 /** 02:49.13 — както хронометърът в записите на оригинала. */
 export function formatTime(seconds) {
@@ -61,16 +62,18 @@ export class Hud {
     this.nitroShown = null;
     this.records = loadRecords();
     this.showRecords();
+    // при смяна на езика от паузата: рекордите и нитрото се пишат наново
+    addEventListener('ffx-lang', () => { this.showRecords(); this.nitroShown = null; });
   }
 
   /** Рекордите под хронометъра и на началния екран. */
   showRecords() {
     const r = this.records;
-    const best = r.bestTime ? 'рекорд ' + formatTime(r.bestTime) : '';
+    const best = r.bestTime ? t('best') + formatTime(r.bestTime) : '';
     this.el.timerBest.textContent = best;
     const parts = [];
-    if (r.bestTime) parts.push('най-добро време ' + formatTime(r.bestTime));
-    if (r.bestPoints) parts.push('най-много точки ' + r.bestPoints.toLocaleString('bg'));
+    if (r.bestTime) parts.push(t('bestTime') + formatTime(r.bestTime));
+    if (r.bestPoints) parts.push(t('bestPoints') + num(r.bestPoints));
     const splash = document.getElementById('splash-records');
     if (splash) splash.textContent = parts.join(' · ');
   }
@@ -87,7 +90,7 @@ export class Hud {
     // както „Please wait..." в оригинала.
     const press = document.getElementById('splash-press');
     if (press && this.el.splash && this.el.splash.style.display !== 'none' && !this.ready) {
-      press.textContent = text || 'моля, изчакай…';
+      press.textContent = text || t('wait');
       return;
     }
     this.el.status.textContent = text ?? '';
@@ -100,11 +103,11 @@ export class Hud {
     document.getElementById('splash-img').src = 'assets/ui/menu.png';
     document.getElementById('btn-play').hidden = false;
     document.getElementById('btn-howto').hidden = false;
-    document.getElementById('splash-press').textContent = 'натисни PLAY или който и да е клавиш';
+    document.getElementById('splash-press').textContent = t('pressPlay');
   }
 
   fatal(message) {
-    this.status('ГРЕШКА: ' + message);
+    this.status(t('error') + message);
     this.el.status.classList.add('error');
   }
 
@@ -122,26 +125,26 @@ export class Hud {
       document.getElementById(id).innerHTML = `<span>${label}</span><b>${value}</b>`;
     };
     // „Residual:" — какво е останало; „Collect:" — какво е събрано.
-    put('c-fuel', 'гориво', pct(s.fuel, totals.fuelMax));
-    put('c-body', 'каросерия', pct(s.body, totals.bodyMax));
-    put('c-fuelbonus', 'бидони', `${s.pickedFuel} / ${totals.fuelBonuses}`);
-    put('c-repair', 'ремонти', `${s.pickedRepair} / ${totals.repairBonuses}`);
+    put('c-fuel', t('fuel'), pct(s.fuel, totals.fuelMax));
+    put('c-body', t('body'), pct(s.body, totals.bodyMax));
+    put('c-fuelbonus', t('fuelCans'), `${s.pickedFuel} / ${totals.fuelBonuses}`);
+    put('c-repair', t('repairs'), `${s.pickedRepair} / ${totals.repairBonuses}`);
     document.getElementById('c-time').textContent = time;
 
     // Текстовете са от .dir: „Congratulations, you win!!", „Status: You was
     // captured.", „Status: Car destroyed, you lose.", „Status: Out of fuel,
     // you lose." и под загубите — „Mission fail: Try again!".
     const [title, sub] = {
-      won: ['Поздравления, ти спечели!!', ''],
-      trapped: ['Заловен си.', 'Мисията се провали: опитай пак!'],
-      crash: ['Колата е унищожена — губиш.', 'Мисията се провали: опитай пак!'],
-      fuel: ['Горивото свърши — губиш.', 'Мисията се провали: опитай пак!'],
-    }[reason] || ['Край', ''];
+      won: [t('won'), ''],
+      trapped: [t('trapped'), t('failed')],
+      crash: [t('crash'), t('failed')],
+      fuel: [t('outOfFuel'), t('failed')],
+    }[reason] || [t('end'), ''];
     const titleEl = document.getElementById('over-title');
     titleEl.textContent = title;
     titleEl.classList.toggle('won', reason === 'won');
     document.getElementById('over-sub').textContent = sub;
-    document.getElementById('over-points').textContent = points.toLocaleString('bg');
+    document.getElementById('over-points').textContent = num(points);
 
     // Време се брои за рекорд само при измъкване; точки — при всеки край.
     const r = this.records;
@@ -157,10 +160,10 @@ export class Hud {
     const record = (id, isNew, label, value) => {
       const el = document.getElementById(id);
       el.innerHTML = `<small>${label}</small>` +
-        (isNew ? `<b class="new">нов рекорд!</b>` : value ? `<b>${value}</b>` : '<b>—</b>');
+        (isNew ? `<b class="new">${t('newRecord')}</b>` : value ? `<b>${value}</b>` : '<b>—</b>');
     };
-    record('c-besttime', newTime, 'рекорд време', r.bestTime ? formatTime(r.bestTime) : '');
-    record('c-bestpoints', newPoints, 'рекорд точки', r.bestPoints ? r.bestPoints.toLocaleString('bg') : '');
+    record('c-besttime', newTime, t('recordTime'), r.bestTime ? formatTime(r.bestTime) : '');
+    record('c-bestpoints', newPoints, t('recordPoints'), r.bestPoints ? num(r.bestPoints) : '');
     document.getElementById('over').style.display = 'flex';
   }
 
@@ -192,7 +195,7 @@ export class Hud {
     const nitro = `${s.nitro}${car.boosting ? '+' : ''}`;
     if (nitro !== this.nitroShown) {
       this.nitroShown = nitro;
-      this.el.nitro.innerHTML = 'нитро ' + '●'.repeat(s.nitro) + '<i>' + '●'.repeat(Math.max(0, NITRO.max - s.nitro)) + '</i>';
+      this.el.nitro.innerHTML = t('nitro') + '●'.repeat(s.nitro) + '<i>' + '●'.repeat(Math.max(0, NITRO.max - s.nitro)) + '</i>';
       this.el.nitro.classList.toggle('on', car.boosting);
     }
 
@@ -216,20 +219,20 @@ export class Hud {
     if (!this.el.debug.classList.contains('on')) return;
     const p = car.position;
     this.el.debug.textContent =
-      `зона      ${world.currentZone}\n` +
-      `под колата ${car.objectUnder || '—'}\n` +
-      `настилка  ${car.surface}\n` +
-      `височина  ${car.height.toFixed(2)}\n` +
-      `скорост   ${car.speed.toFixed(1)} ft/s  (${(car.speed * 1.097).toFixed(0)} km/h)\n` +
-      `плъзгане  ${car.slideSpeed.toFixed(1)}\n` +
-      `позиция   ${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}\n` +
-      `гориво    ${Math.round(s.fuel)}\n` +
-      `каросерия ${Math.round(s.body)}\n` +
-      `бонуси    ⛽ ${s.pickedFuel}  🔧 ${s.pickedRepair}\n` +
-      (chaser ? `джип      ${chaser.status} · ${chaser.action}` +
-                `${chaser.inGarage ? ' · извън сцената' : ''}\n` +
-                `  на       ${chaser.position.distanceTo(car.position).toFixed(0)} ft` +
-                `  ${chaser.isHidden() ? '(извън кадър)' : '(в кадър)'}\n` : '') +
-      `версия    ${BUILD}`;
+      `zone      ${world.currentZone}\n` +
+      `under car ${car.objectUnder || '—'}\n` +
+      `surface   ${car.surface}\n` +
+      `height    ${car.height.toFixed(2)}\n` +
+      `speed     ${car.speed.toFixed(1)} ft/s  (${(car.speed * 1.097).toFixed(0)} km/h)\n` +
+      `slide     ${car.slideSpeed.toFixed(1)}\n` +
+      `position  ${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}\n` +
+      `fuel      ${Math.round(s.fuel)}\n` +
+      `body      ${Math.round(s.body)}\n` +
+      `bonuses   ⛽ ${s.pickedFuel}  🔧 ${s.pickedRepair}\n` +
+      (chaser ? `jeep      ${chaser.status} · ${chaser.action}` +
+                `${chaser.inGarage ? ' · off stage' : ''}\n` +
+                `  at       ${chaser.position.distanceTo(car.position).toFixed(0)} ft` +
+                `  ${chaser.isHidden() ? '(off screen)' : '(on screen)'}\n` : '') +
+      `version   ${BUILD}`;
   }
 }

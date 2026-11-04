@@ -9,8 +9,8 @@
 // Заради това изглежда, че противникът е предвидил маршрута ти.
 
 import * as THREE from 'three';
-import { CPU3, CAR_SIZE } from './params.js?v=163';
-import { Chaser } from './chaser.js?v=163';
+import { CPU3, CAR_SIZE } from './params.js?v=165';
+import { Chaser } from './chaser.js?v=165';
 
 const D = Math.PI / 180;
 const DEG = 180 / Math.PI;

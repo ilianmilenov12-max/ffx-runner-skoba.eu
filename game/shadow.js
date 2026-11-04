@@ -5,7 +5,7 @@
 // по нормалата на настилката. Затова сянката ляга по рампите и стъпалата.
 
 import * as THREE from 'three';
-import { RIDE_HEIGHT } from './params.js?v=163';
+import { RIDE_HEIGHT } from './params.js?v=165';
 
 const UP = new THREE.Vector3(0, 0, 1);
 

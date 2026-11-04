@@ -1,0 +1,15 @@
+# Модулите в game/ се зареждат с ?v=<версия> (tools/bump.sh), затова могат да се пазят дълго.
+# Страницата и version.txt се проверяват винаги: по version.txt main.js разбира, че има нова версия.
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/version.txt
+  Cache-Control: no-store
+/game/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*
+  Cache-Control: public, max-age=604800
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

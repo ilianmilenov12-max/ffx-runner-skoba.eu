@@ -10,7 +10,7 @@
 // интерполирано между две стъпки, за да е гладко и на 60 кадъра.
 
 import * as THREE from 'three';
-import { CAMERA } from './params.js?v=163';
+import { CAMERA } from './params.js?v=165';
 
 const STATUS = { RELAXED: 'relaxed', WARNING: 'warning', DANGER: 'danger' };
 

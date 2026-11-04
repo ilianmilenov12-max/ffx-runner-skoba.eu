@@ -1,0 +1,12 @@
+// FFX Runner на ffx.skoba.eu: само статични файлове (без Worker код), затова заявките са безплатни и без лимит.
+// Качване: bash deploy/build.sh && npx wrangler@4 deploy
+{
+  "name": "ffx-runner",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist"
+  },
+  "routes": [
+    { "pattern": "ffx.skoba.eu", "custom_domain": true }
+  ]
+}

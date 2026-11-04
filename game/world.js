@@ -9,8 +9,8 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { WORLD_SCALE } from './params.js?v=163';
-import { ZONE_LIST, ZONE_ON, INVISIBLE, DOUBLE_SIDED } from './data.js?v=163';
+import { WORLD_SCALE } from './params.js?v=165';
+import { ZONE_LIST, ZONE_ON, INVISIBLE, DOUBLE_SIDED } from './data.js?v=165';
 
 // probeGround в DriveHuman разпознава настилката по името на обекта отдолу.
 // Lingo сравнява низове без оглед на регистъра, затова сравняваме в lowercase.

@@ -1,3 +1,23 @@
+# FFX Runner: web port
+
+Play it at **https://ffx.skoba.eu/** (English by default, Bulgarian via `?lang=bg` or the pause menu).
+
+A faithful port of **FFX Runner** by Officine Pixel (also known as *Alias Runner*), a mid-2000s
+Macromedia Director 8.5 + Shockwave 3D game, to the modern browser with Three.js. No plugins.
+
+The original is at <https://github.com/OfficinePixel/ffx_runner> and is released under **GPL-3.0**.
+This port is a derivative work under the same license (see `LICENSE`). The game, graphics, level
+and sound are by the people listed in `CREDITS`. Web port by [Skoba](https://skoba.eu/).
+
+- `index.html`, `game/`: the port (plain ES modules, no build step; Three.js from a CDN)
+- `assets/`: the city and cars as glTF, the original sounds and UI
+- `tools/`: the scripts that produce `assets/` and `game/data.js` from the original files
+- `deploy/build.sh`: builds `dist/` for Cloudflare; `npx wrangler deploy` publishes it
+
+The notes below are in Bulgarian.
+
+---
+
 # FFX Runner — уеб порт
 
 Верен порт на **FFX Runner** на Officine Pixel (известна още като *Alias Runner*

@@ -9,7 +9,7 @@
 // Точките, които НЕ следват от геометрията, са означени поотделно по-долу.
 
 import * as THREE from 'three';
-import { CAR } from './params.js?v=163';
+import { CAR } from './params.js?v=165';
 
 const CAR_MAX_HEIGHT = CAR.maxHeight;
 
