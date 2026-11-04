@@ -11,8 +11,8 @@ const BLINK_FRACTION = 1 / 5;   // powerBlink / energyBlink в Overlay.ls
 // Версията от адреса на модула — показва се в диагностиката, за да се вижда
 // веднага дали браузърът не сервира стар кеширан файл.
 export const BUILD = new URL(import.meta.url).searchParams.get('v') || '?';
-import { NITRO } from './params.js?v=165';
-import { t, num } from './i18n.js?v=165';
+import { NITRO } from './params.js?v=167';
+import { t, num } from './i18n.js?v=167';
 
 /** 02:49.13 — както хронометърът в записите на оригинала. */
 export function formatTime(seconds) {
@@ -81,6 +81,7 @@ export class Hud {
   /** Началният екран е splash.bmp на оригинала. */
   hideSplash() {
     if (this.el.splash) this.el.splash.style.display = 'none';
+    document.body.classList.add('playing');
     this.el.timer.style.display = 'block';
     this.el.speedo.style.display = 'block';
   }
@@ -103,7 +104,7 @@ export class Hud {
     document.getElementById('splash-img').src = 'assets/ui/menu.png';
     document.getElementById('btn-play').hidden = false;
     document.getElementById('btn-howto').hidden = false;
-    document.getElementById('splash-press').textContent = t('pressPlay');
+    document.getElementById('splash-press').textContent = t(matchMedia('(pointer: coarse)').matches ? 'tapPlay' : 'pressPlay');
   }
 
   fatal(message) {

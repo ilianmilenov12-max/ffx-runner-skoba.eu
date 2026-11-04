@@ -8,8 +8,8 @@
 // оградите — от слетия им в едно обект Transenna16.
 
 import * as THREE from 'three';
-import { ZONE_LIST } from './data.js?v=165';
-import { GRAVITY } from './params.js?v=165';
+import { ZONE_LIST } from './data.js?v=167';
+import { GRAVITY } from './params.js?v=167';
 
 // Невидимите тела на Havok, които пълнят дупки в конверсията. В оригинала
 // Starting.ls маха всичко с „?" от сцената, но телата остават във физиката.

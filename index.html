@@ -22,6 +22,9 @@
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #0d0f14;
+               /* без увеличаване с двойно докосване и без лупа при задържане на телефон */
+               touch-action: manipulation; -webkit-user-select: none; user-select: none;
+               -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
                font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: #dfe5f0; }
   #app, #app canvas { display: block; }
 
@@ -151,6 +154,8 @@
   /* Докосване: показва се само на устройства с тъч. */
   #touch { position: absolute; inset: 0; display: none; pointer-events: none; }
   #touch.on { display: block; }
+  /* на началния екран бутоните само пречат: показват се, когато бягането започне */
+  body:not(.playing) #touch { display: none; }
   #touch button { position: absolute; pointer-events: auto; width: 68px; height: 68px;
                   border-radius: 50%; border: 2px solid #ffffff55; background: #0a0d1366;
                   color: #fff; font: 700 22px/1 ui-monospace, monospace; touch-action: none;
@@ -167,8 +172,23 @@
   /* С бутоните долу скоростомерът отива под картата. */
   body.touch #speedo { bottom: auto; top: 330px; }
   @media (max-width: 520px) {
-    #touch .pause { top: 112px; }
+    #touch .pause { top: 124px; }
     body.touch #speedo { top: 234px; }
+  }
+
+  /* Телефон хоризонтално: ниско е, затова скалите са по-малки, картата отива горе до скалата
+     на каросерията, а скоростомерът под нея, за да не застъпват бутоните отдясно. */
+  @media (max-height: 500px) {
+    .gauge { width: 96px; height: 96px; }
+    #timer .now { font-size: 18px; }
+    #minimap { top: 8px; right: 112px; width: 96px; height: 96px; }
+    #touch .pause { top: 112px; }
+    body.touch #speedo { top: 112px; bottom: auto; }
+    body.touch #speedo b { font-size: 26px; }
+    .sheet43 { width: min(100%, calc(62vh * 4 / 3)); }
+    #splash .press { margin-top: 8px; }
+    #splash .records { margin-top: 4px; }
+    #splash .credits { margin-top: 6px; }
   }
 
   #debug { position: absolute; left: 14px; bottom: 44px; white-space: pre;
@@ -286,7 +306,7 @@
     "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
 } }
 </script>
-<script type="module" src="game/main.js?v=165"></script>
+<script type="module" src="game/main.js?v=167"></script>
 <script>
   addEventListener('keydown', e => {
     if (e.key === 'd' || e.key === 'D') document.getElementById('debug').classList.toggle('on');

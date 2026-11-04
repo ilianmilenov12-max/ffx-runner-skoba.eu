@@ -3,8 +3,8 @@
 // числата в params.js още при зареждането на модула — преди те да бъдат
 // прочетени — затова смяната ѝ важи от следващото бягане.
 
-import { CPU, DAMAGE, NITRO } from './params.js?v=165';
-import { lang, setLang, t } from './i18n.js?v=165';
+import { CPU, DAMAGE, NITRO } from './params.js?v=167';
+import { lang, setLang, t } from './i18n.js?v=167';
 
 const KEY = 'ffx-settings';
 const DEFAULTS = {

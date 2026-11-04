@@ -6,8 +6,8 @@
 // Името в оригинала е „топка за боулинг" и описва точно това, което прави.
 
 import * as THREE from 'three';
-import { CPU, CAR_SIZE, TIMESTEP } from './params.js?v=165';
-import { Vehicle, UP } from './vehicle.js?v=165';
+import { CPU, CAR_SIZE, TIMESTEP } from './params.js?v=167';
+import { Vehicle, UP } from './vehicle.js?v=167';
 
 const DEG = 180 / Math.PI;
 

@@ -13,6 +13,7 @@ const TEXT = {
     loadingWorld: 'loading the city…',
     loadingCars: 'loading the cars…',
     pressPlay: 'press PLAY or any key',
+    tapPlay: 'tap PLAY',
     error: 'ERROR: ',
     best: 'best ',
     bestTime: 'best time ',
@@ -75,7 +76,7 @@ const TEXT = {
       '<kbd>P</kbd> pause and settings · <kbd>R</kbd> restart · <kbd>D</kbd> diagnostics',
     credits: 'Original game by <a href="https://github.com/OfficinePixel/ffx_runner" target="_blank" rel="noopener">Officine Pixel</a>' +
       ' · <a href="LICENSE.txt" target="_blank">GPL-3.0</a>' +
-      ' · <a href="https://github.com/ilianmilenov12-max/ffx-runner" target="_blank" rel="noopener">source code</a>' +
+      ' · <a href="https://github.com/ilianmilenov12-max/ffx-runner-skoba.eu" target="_blank" rel="noopener">source code</a>' +
       ' · web port by <a href="https://skoba.eu/proekti/ffx-runner?ref=ffx" target="_blank" rel="noopener">Skoba</a>',
     switchLang: '<a href="?lang=bg" lang="bg">Български</a>',
   },
@@ -84,6 +85,7 @@ const TEXT = {
     loadingWorld: 'зареждане на света…',
     loadingCars: 'зареждане на колите…',
     pressPlay: 'натисни PLAY или който и да е клавиш',
+    tapPlay: 'докосни PLAY',
     error: 'ГРЕШКА: ',
     best: 'рекорд ',
     bestTime: 'най-добро време ',
@@ -145,7 +147,7 @@ const TEXT = {
       '<kbd>P</kbd> пауза и настройки · <kbd>R</kbd> отначало · <kbd>D</kbd> диагностика',
     credits: 'Оригиналната игра е на <a href="https://github.com/OfficinePixel/ffx_runner" target="_blank" rel="noopener">Officine Pixel</a>' +
       ' · <a href="LICENSE.txt" target="_blank">GPL-3.0</a>' +
-      ' · <a href="https://github.com/ilianmilenov12-max/ffx-runner" target="_blank" rel="noopener">изходен код</a>' +
+      ' · <a href="https://github.com/ilianmilenov12-max/ffx-runner-skoba.eu" target="_blank" rel="noopener">изходен код</a>' +
       ' · уеб порт: <a href="https://skoba.eu/proekti/ffx-runner?ref=ffx" target="_blank" rel="noopener">Скоба</a>',
     switchLang: '<a href="?lang=en" lang="en">English</a>',
   },
