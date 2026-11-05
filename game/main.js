@@ -436,7 +436,7 @@ async function boot() {
     }
   }
 
-  renderer.setAnimationLoop(now => {
+  const loop = now => {
     const frame = Math.min((now - last) / 1000, 0.25);
     accumulator += frame;
     last = now;
@@ -482,7 +482,17 @@ async function boot() {
       { position: ghost.model.position, hidden: !ghost.model.visible, color: '#7fb8ff' },
     ]);
     look.render();
-  });
+  };
+  renderer.setAnimationLoop(loop);
+
+  // За записване на видео (tools/capture.js): спира часовника на браузъра и връща функция,
+  // която рисува един кадър, все едно са минали `seconds` секунди. Така видеото излиза гладко,
+  // колкото и бавно да се снима всеки кадър.
+  window.ffx.manual = () => {
+    renderer.setAnimationLoop(null);
+    let clock = last;
+    return seconds => { clock += seconds * 1000; loop(clock); };
+  };
 
   // За тестове: превърта `seconds` секунди симулация наведнъж. `perStep` се
   // вика преди всяка стъпка — там автопилотът натиска клавишите. Камерата
