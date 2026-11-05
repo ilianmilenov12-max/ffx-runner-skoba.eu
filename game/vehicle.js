@@ -7,7 +7,7 @@
 
 import * as THREE from 'three';
 import { GRAVITY, INERTIA, RIDE_HEIGHT, RESTITUTION,
-         GROUND_FRICTION, SPIN_FRICTION } from './params.js?v=167';
+         GROUND_FRICTION, SPIN_FRICTION } from './params.js?v=168';
 
 export const FORWARD = new THREE.Vector3(1, 0, 0);   // G.forward
 export const UP = new THREE.Vector3(0, 0, 1);        // G.up

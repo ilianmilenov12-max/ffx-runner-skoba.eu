@@ -37,6 +37,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._cors()
             self.end_headers()
             return
+        # /inputs?name=... — записът на карането от tools/inputs.js (?rec=<име>) → tools/inputs/<име>.json
+        inputs = re.search(r'^/inputs\?name=([\w-]+)', self.path)
+        if inputs:
+            length = int(self.headers.get('Content-Length') or 0)
+            folder = OUT.parent / 'inputs'
+            folder.mkdir(exist_ok=True)
+            (folder / f'{inputs.group(1)}.json').write_bytes(self.rfile.read(length))
+            self.send_response(204)
+            self._cors()
+            self.end_headers()
+            return
         m = re.search(r'id=([\w-]+)', self.path)
         length = int(self.headers.get('Content-Length') or 0)
         body = self.rfile.read(length) if length else b''

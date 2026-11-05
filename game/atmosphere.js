@@ -4,8 +4,8 @@
 // колата и го следва — така са остри, а струват колкото за малък град.
 
 import * as THREE from 'three';
-import { Sky } from './vendor-sky.js?v=167';
-import { Dome } from './dome.js?v=167';
+import { Sky } from './vendor-sky.js?v=168';
+import { Dome } from './dome.js?v=168';
 
 const SHADOW_SPAN = 240;          // фута от колата във всяка посока
 const SHADOW_MAP = 4096;

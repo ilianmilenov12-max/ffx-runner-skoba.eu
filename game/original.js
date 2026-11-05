@@ -8,8 +8,8 @@
 // оградите — от слетия им в едно обект Transenna16.
 
 import * as THREE from 'three';
-import { ZONE_LIST } from './data.js?v=167';
-import { GRAVITY } from './params.js?v=167';
+import { ZONE_LIST } from './data.js?v=168';
+import { GRAVITY } from './params.js?v=168';
 
 // Невидимите тела на Havok, които пълнят дупки в конверсията. В оригинала
 // Starting.ls маха всичко с „?" от сцената, но телата остават във физиката.
@@ -137,6 +137,16 @@ const BARRIER_REACH = 2.6;      // фута от центъра ѝ до цент
 const BARRIER_KICK = 1.25;      // колко от скоростта на колата взема
 const BARRIER_MASS_SHARE = 50 / 650;
 
+// Случайни числа с постоянно начало (mulberry32): оградите хвърчат различно при всеки удар,
+// но еднакво при всяко зареждане, за да се повтаря записаното каране (tools/inputs.js).
+let seed = 0x5eed;
+function rand() {
+  seed = (seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
 class Barrier {
   constructor(object, base) {
     this.object = object;
@@ -149,10 +159,10 @@ class Barrier {
 
   hit(car) {
     const v = car.velocity;
-    this.velocity.set(v.x * BARRIER_KICK, v.y * BARRIER_KICK, 6 + Math.random() * 4);
-    this.velocity.x += (Math.random() - 0.5) * 8;
-    this.velocity.y += (Math.random() - 0.5) * 8;
-    this.spin.set((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 6);
+    this.velocity.set(v.x * BARRIER_KICK, v.y * BARRIER_KICK, 6 + rand() * 4);
+    this.velocity.x += (rand() - 0.5) * 8;
+    this.velocity.y += (rand() - 0.5) * 8;
+    this.spin.set((rand() - 0.5) * 10, (rand() - 0.5) * 10, (rand() - 0.5) * 6);
     this.flying = true;
     // Колата губи толкова, колкото тежи оградата спрямо двете заедно.
     const speed = v.length();

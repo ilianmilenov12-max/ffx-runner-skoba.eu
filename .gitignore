@@ -9,3 +9,5 @@ dist/
 .wrangler/
 node_modules/
 .DS_Store
+tools/inputs/
+tools/shots/

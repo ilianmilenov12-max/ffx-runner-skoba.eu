@@ -13,15 +13,21 @@
 const W = 1080, H = 1920;
 
 export async function capture(ffx, { seconds, fps = 30, prefix = 'f', overlay = null,
-  server = 'http://127.0.0.1:8799', start = 0 } = {}) {
-  const ap = await import('./autopilot.js?t=' + Date.now());
-  const pilot = await ap.createPilot(ffx, { invulnerable: true, infiniteFuel: true });
-  // функцията, която натиска клавишите: autopilot.js я дава само на ffx.advance
-  let drive = null;
-  const advance = ffx.advance;
-  ffx.advance = (s, perStep) => { drive = perStep; };
-  pilot.run(0);
-  ffx.advance = advance;
+  server = 'http://127.0.0.1:8799', start = 0, fromStep = null } = {}) {
+  // Карането: записаното (?replay=<име>, tools/inputs.js) или автопилотът.
+  let drive = null, pilot = null;
+  if (ffx.replay) {
+    // превъртане до първия кадър без рисуване: клавишите ги слага ffx.onStep
+    if (fromStep != null && fromStep > ffx.state.step) ffx.advance((fromStep - ffx.state.step) * 0.04);
+  } else {
+    const ap = await import('./autopilot.js?t=' + Date.now());
+    pilot = await ap.createPilot(ffx, { invulnerable: true, infiniteFuel: true });
+    // функцията, която натиска клавишите: autopilot.js я дава само на ffx.advance
+    const advance = ffx.advance;
+    ffx.advance = (s, perStep) => { drive = perStep; };
+    pilot.run(0);
+    ffx.advance = advance;
+  }
 
   // картината на играта точно в 1080×1920
   const { renderer, look } = ffx;
@@ -45,7 +51,7 @@ export async function capture(ffx, { seconds, fps = 30, prefix = 'f', overlay = 
     await fetch(`${server}/shot?name=${prefix}${String(f).padStart(4, '0')}`, { method: 'POST', body: blob });
     if (f % fps === 0) console.log(`кадър ${f}/${total}, ${((performance.now() - t0) / 1000).toFixed(0)} s`);
   }
-  return { frames: total, ...pilot.status() };
+  return { frames: total, step: ffx.state.step, runTime: ffx.state.runTime, ...(pilot ? pilot.status() : {}) };
 }
 
 // ── Надписите на рийла, в стила на Скоба (жълто, черно, тесни главни букви) ──

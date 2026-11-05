@@ -6,8 +6,8 @@
 // Името в оригинала е „топка за боулинг" и описва точно това, което прави.
 
 import * as THREE from 'three';
-import { CPU, CAR_SIZE, TIMESTEP } from './params.js?v=167';
-import { Vehicle, UP } from './vehicle.js?v=167';
+import { CPU, CAR_SIZE, TIMESTEP } from './params.js?v=168';
+import { Vehicle, UP } from './vehicle.js?v=168';
 
 const DEG = 180 / Math.PI;
 
@@ -46,6 +46,7 @@ export class Chaser extends Vehicle {
   }
 
   step(dt, simTime) {
+    this.clock = simTime;   // за targetPosition: по времето на симулацията, не на браузъра
     // В гаража колата е извън сцената: в оригинала Havok я държи неподвижна,
     // тук просто не я симулираме — иначе пада през света, защото под точката
     // на гаража няма настилка.
@@ -367,7 +368,7 @@ export class Chaser extends Vehicle {
 
   /** Кутийките се люлеят отстрани на играча със синус, период 3 секунди. */
   targetPosition(side) {
-    const t = performance.now() / 1000;
+    const t = this.clock ?? 0;
     const delta = Math.sin(2 * Math.PI / TARGET_PERIOD * t) * TARGET_AMPLITUDE;
     const offset = side === 'right' ? -TARGET_OFFSET + delta : TARGET_OFFSET - delta;
     return new THREE.Vector3(0, offset, 0)

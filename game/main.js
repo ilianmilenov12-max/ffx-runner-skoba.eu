@@ -5,38 +5,38 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { World } from './world.js?v=167';
-import { PlayerCar } from './car.js?v=167';
-import { Chaser } from './chaser.js?v=167';
-import { Ambusher } from './ambusher.js?v=167';
-import { StreetDriver } from './driver.js?v=167';
-import { Trail } from './trail.js?v=167';
-import { makeShadow, updateShadow } from './shadow.js?v=167';
-import { Particles } from './particles.js?v=167';
-import { Sequence } from './sequence.js?v=167';
-import { ChaseCamera } from './camera.js?v=167';
-import { Hud, BUILD } from './hud.js?v=167';
-import { Engine } from './audio.js?v=167';
-import { BONUSES } from './data.js?v=167';
-import { addOriginal, stepBarriers } from './original.js?v=167';
-import { Look } from './look.js?v=167';
-import { Effects } from './effects.js?v=167';
-import { Ghost } from './ghost.js?v=167';
-import { Minimap } from './minimap.js?v=167';
-import { settings, pauseMenu } from './settings.js?v=167';
-import { bindTouch } from './touch.js?v=167';
-import { Atmosphere } from './atmosphere.js?v=167';
-import { addLights } from './lights.js?v=167';
-import { buildSkyline } from './skyline.js?v=167';
-import { applyRelief } from './relief.js?v=167';
-import { buildFacadeDetails } from './facade.js?v=167';
-import { buildTheatre } from './theatre.js?v=167';
-import { applyNormals, applyGroundDetail } from './normals.js?v=167';
-import { t } from './i18n.js?v=167';
+import { World } from './world.js?v=168';
+import { PlayerCar } from './car.js?v=168';
+import { Chaser } from './chaser.js?v=168';
+import { Ambusher } from './ambusher.js?v=168';
+import { StreetDriver } from './driver.js?v=168';
+import { Trail } from './trail.js?v=168';
+import { makeShadow, updateShadow } from './shadow.js?v=168';
+import { Particles } from './particles.js?v=168';
+import { Sequence } from './sequence.js?v=168';
+import { ChaseCamera } from './camera.js?v=168';
+import { Hud, BUILD } from './hud.js?v=168';
+import { Engine } from './audio.js?v=168';
+import { BONUSES } from './data.js?v=168';
+import { addOriginal, stepBarriers } from './original.js?v=168';
+import { Look } from './look.js?v=168';
+import { Effects } from './effects.js?v=168';
+import { Ghost } from './ghost.js?v=168';
+import { Minimap } from './minimap.js?v=168';
+import { settings, pauseMenu } from './settings.js?v=168';
+import { bindTouch } from './touch.js?v=168';
+import { Atmosphere } from './atmosphere.js?v=168';
+import { addLights } from './lights.js?v=168';
+import { buildSkyline } from './skyline.js?v=168';
+import { applyRelief } from './relief.js?v=168';
+import { buildFacadeDetails } from './facade.js?v=168';
+import { buildTheatre } from './theatre.js?v=168';
+import { applyNormals, applyGroundDetail } from './normals.js?v=168';
+import { t } from './i18n.js?v=168';
 import {
   TIMESTEP, FUEL_MAX, BODY_MAX, FUEL_BONUS, BODY_BONUS,
   START_DELAY_MS, BONUS_HEIGHT, BONUS_RADIUS, WORLD_SCALE, CAMERA, RESTITUTION, NITRO,
-} from './params.js?v=167';
+} from './params.js?v=168';
 
 const state = {
   fuel: FUEL_MAX,
@@ -48,6 +48,7 @@ const state = {
   shown: false,
   won: false,
   paused: false,
+  step: 0, beganAt: null,
   pickedFuel: 0,
   pickedRepair: 0,
   running: false,
@@ -128,7 +129,17 @@ async function boot() {
   // докато играчът изкачва рампата, джипът пълзи по X към неговото платно, а
   // щом излезе горе, тръгва с +X насреща — тоест е чакал на запад от завоя.
   // Това е колата, която във видеото изскача отсреща на седмата секунда.
-  const chaser = new Chaser(world, car, camera);
+  // Колите на противника гледат дали са в кадър през отделна камера: стойката е на chase, а формата
+  // е постоянна (4:3, като оригинала). Иначе решенията им зависят от прозореца и от ефекта за скорост
+  // в look.js, тоест от рисуването, и записът на каране (tools/inputs.js) не би се повторил точно.
+  const aiEye = new THREE.PerspectiveCamera(CAMERA.fov, 4 / 3, 1, 1000);
+  const syncEye = () => {
+    aiEye.position.copy(chase.position);
+    aiEye.quaternion.copy(chase.quaternion);
+    if (aiEye.fov !== chase.fov) { aiEye.fov = chase.fov; aiEye.updateProjectionMatrix(); }
+    aiEye.updateMatrixWorld();
+  };
+  const chaser = new Chaser(world, car, aiEye);
   const ahead = new THREE.Vector3(Math.cos(start.heading), Math.sin(start.heading), 0);
   {
     const lurk = world.probeDown(new THREE.Vector3(-115, -820, 60), 120);
@@ -140,13 +151,13 @@ async function boot() {
 
   // Вторият джип не гони, а причаква по маршрута — деветте места са в
   // ambusher.js, извадени от aiGoTo на оригинала.
-  const ambusher = new Ambusher(world, car, camera);
+  const ambusher = new Ambusher(world, car, aiEye);
   const ambusherBody = buildCarModel(cars, 'FurgoneCPU');
   scene.add(ambusherBody);
 
   // Третата кола не знае улиците — върви по следата, която играчът оставя.
   const trail = new Trail();
-  const driver = new StreetDriver(world, car, camera, trail);
+  const driver = new StreetDriver(world, car, aiEye, trail);
   driver.placeAt(start.position.clone().addScaledVector(ahead, -30), start.heading);
   const driverBody = buildCarModel(cars, 'AutoParcB01');
   scene.add(driverBody);
@@ -258,6 +269,7 @@ async function boot() {
 
   // Началният екран е splash.bmp на оригинала. Натискането е и жестът, с
   // който браузърът позволява звук.
+  let startAt = 0, greenLight = () => {};
   let begun = false;
   const begin = () => {
     if (begun) return;
@@ -266,13 +278,18 @@ async function boot() {
     hud.hideSplash();
     mapCanvas.style.display = 'block';
     hud.countdown(START_DELAY_MS);
-    setTimeout(() => {
-      state.running = true;
-      state.started = true;
-      hud.countdown(0);
-      if (light) light.rotateZ(Math.PI / 2);
-    }, START_DELAY_MS);
+    // светофарът светва зелено след точен брой стъпки, а не по часовника: така записаното каране
+    // се повтаря стъпка по стъпка (tools/inputs.js)
+    state.beganAt = state.step;
+    startAt = state.step + Math.round(START_DELAY_MS / 1000 / TIMESTEP);
   };
+  greenLight = () => {
+    state.running = true;
+    state.started = true;
+    hud.countdown(0);
+    if (light) light.rotateZ(Math.PI / 2);
+  };
+  window.ffx.begin = begin;
   // splash3 на оригинала: PLAY и HOW TO PLAY. Щракване където и да е или
   // клавиш също пускат играта, както беше досега.
   const howto = document.getElementById('howto');
@@ -330,6 +347,11 @@ async function boot() {
   let endReason = null, endAt = 0;
 
   function stepOnce() {
+    // записът и повторението на карането (tools/inputs.js) четат и пишат клавишите тук
+    window.ffx.onStep?.(state.step);
+    state.step++;
+    if (startAt && state.step >= startAt) { startAt = 0; greenLight(); }
+    syncEye();
     state.simTime += TIMESTEP;
     // Хронометърът спира, щом изходът е решен — на релсите или в капана
     // (управлението се отнема), или когато колата е унищожена. Сцените
@@ -483,7 +505,9 @@ async function boot() {
     ]);
     look.render();
   };
-  renderer.setAnimationLoop(loop);
+  // ?replay=<име>: кадрите ги рисува tools/capture.js през ffx.manual(), часовникът не тръгва
+  const replaying = new URL(location.href).searchParams.has('replay');
+  if (!replaying) renderer.setAnimationLoop(loop);
 
   // За записване на видео (tools/capture.js): спира часовника на браузъра и връща функция,
   // която рисува един кадър, все едно са минали `seconds` секунди. Така видеото излиза гладко,
@@ -511,6 +535,13 @@ async function boot() {
 
   // Записвачът за тестове (tools/recorder.js) се включва веднъж от конзолата
   // и после оцелява при R: флагът му е в sessionStorage.
+  const params = new URL(location.href).searchParams;
+  if (params.has('rec') || params.has('replay')) {
+    import(`../tools/inputs.js?v=${BUILD}`)
+      .then(m => params.has('rec') ? m.record(window.ffx, params.get('rec')) : m.replay(window.ffx, params.get('replay')))
+      .catch(err => console.warn('записът на карането не тръгна:', err));
+  }
+
   let recording = false;
   try { recording = !!sessionStorage.getItem('ffx-rec-on'); } catch { /* забранено */ }
   if (recording) {
