@@ -2,7 +2,7 @@
 // невидимата пътечка, по която върви третата кола (trail.js).
 
 import * as THREE from 'three';
-import { CAR, RIDE_HEIGHT } from './params.js?v=168';
+import { CAR, RIDE_HEIGHT } from './params.js?v=169';
 
 const MAX_MARKS = 1400;          // парчета следа, после най-старите се преизползват
 const MARK_WIDTH = 0.32;         // фута

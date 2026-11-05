@@ -4,9 +4,9 @@
 // както е в Lingo-то: поредица от импулси, приложени на всяка стъпка от 0.04 s.
 
 import * as THREE from 'three';
-import { CAR, CAR_SIZE, DAMAGE, FEET_PER_METRE, NITRO, TIMESTEP } from './params.js?v=168';
-import { SURFACE, classifySurface } from './world.js?v=168';
-import { Vehicle, UP } from './vehicle.js?v=168';
+import { CAR, CAR_SIZE, DAMAGE, FEET_PER_METRE, NITRO, TIMESTEP } from './params.js?v=169';
+import { SURFACE, classifySurface } from './world.js?v=169';
+import { Vehicle, UP } from './vehicle.js?v=169';
 
 export class PlayerCar extends Vehicle {
   constructor(world, state) {

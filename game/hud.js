@@ -11,8 +11,8 @@ const BLINK_FRACTION = 1 / 5;   // powerBlink / energyBlink в Overlay.ls
 // Версията от адреса на модула — показва се в диагностиката, за да се вижда
 // веднага дали браузърът не сервира стар кеширан файл.
 export const BUILD = new URL(import.meta.url).searchParams.get('v') || '?';
-import { NITRO } from './params.js?v=168';
-import { t, num } from './i18n.js?v=168';
+import { NITRO } from './params.js?v=169';
+import { t, num } from './i18n.js?v=169';
 
 /** 02:49.13 — както хронометърът в записите на оригинала. */
 export function formatTime(seconds) {

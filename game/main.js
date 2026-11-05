@@ -5,38 +5,38 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { World } from './world.js?v=168';
-import { PlayerCar } from './car.js?v=168';
-import { Chaser } from './chaser.js?v=168';
-import { Ambusher } from './ambusher.js?v=168';
-import { StreetDriver } from './driver.js?v=168';
-import { Trail } from './trail.js?v=168';
-import { makeShadow, updateShadow } from './shadow.js?v=168';
-import { Particles } from './particles.js?v=168';
-import { Sequence } from './sequence.js?v=168';
-import { ChaseCamera } from './camera.js?v=168';
-import { Hud, BUILD } from './hud.js?v=168';
-import { Engine } from './audio.js?v=168';
-import { BONUSES } from './data.js?v=168';
-import { addOriginal, stepBarriers } from './original.js?v=168';
-import { Look } from './look.js?v=168';
-import { Effects } from './effects.js?v=168';
-import { Ghost } from './ghost.js?v=168';
-import { Minimap } from './minimap.js?v=168';
-import { settings, pauseMenu } from './settings.js?v=168';
-import { bindTouch } from './touch.js?v=168';
-import { Atmosphere } from './atmosphere.js?v=168';
-import { addLights } from './lights.js?v=168';
-import { buildSkyline } from './skyline.js?v=168';
-import { applyRelief } from './relief.js?v=168';
-import { buildFacadeDetails } from './facade.js?v=168';
-import { buildTheatre } from './theatre.js?v=168';
-import { applyNormals, applyGroundDetail } from './normals.js?v=168';
-import { t } from './i18n.js?v=168';
+import { World } from './world.js?v=169';
+import { PlayerCar } from './car.js?v=169';
+import { Chaser } from './chaser.js?v=169';
+import { Ambusher } from './ambusher.js?v=169';
+import { StreetDriver } from './driver.js?v=169';
+import { Trail } from './trail.js?v=169';
+import { makeShadow, updateShadow } from './shadow.js?v=169';
+import { Particles } from './particles.js?v=169';
+import { Sequence } from './sequence.js?v=169';
+import { ChaseCamera } from './camera.js?v=169';
+import { Hud, BUILD } from './hud.js?v=169';
+import { Engine } from './audio.js?v=169';
+import { BONUSES } from './data.js?v=169';
+import { addOriginal, stepBarriers } from './original.js?v=169';
+import { Look } from './look.js?v=169';
+import { Effects } from './effects.js?v=169';
+import { Ghost } from './ghost.js?v=169';
+import { Minimap } from './minimap.js?v=169';
+import { settings, pauseMenu } from './settings.js?v=169';
+import { bindTouch } from './touch.js?v=169';
+import { Atmosphere } from './atmosphere.js?v=169';
+import { addLights } from './lights.js?v=169';
+import { buildSkyline } from './skyline.js?v=169';
+import { applyRelief } from './relief.js?v=169';
+import { buildFacadeDetails } from './facade.js?v=169';
+import { buildTheatre } from './theatre.js?v=169';
+import { applyNormals, applyGroundDetail } from './normals.js?v=169';
+import { t } from './i18n.js?v=169';
 import {
   TIMESTEP, FUEL_MAX, BODY_MAX, FUEL_BONUS, BODY_BONUS,
   START_DELAY_MS, BONUS_HEIGHT, BONUS_RADIUS, WORLD_SCALE, CAMERA, RESTITUTION, NITRO,
-} from './params.js?v=168';
+} from './params.js?v=169';
 
 const state = {
   fuel: FUEL_MAX,

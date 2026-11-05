@@ -20,6 +20,8 @@ const pack = (car, state) => KEYS.reduce((v, k, i) => v | (car.keys[k] ? 1 << i 
 export function record(ffx, name) {
   const { car, state } = ffx;
   const runs = [];
+  // записвачът се зарежда, след като играта вече е направила няколко стъпки: от коя започва записът
+  const from = state.step;
   ffx.onStep = () => {
     const v = pack(car, state);
     const last = runs[runs.length - 1];
@@ -30,7 +32,7 @@ export function record(ffx, name) {
   try { settings = JSON.parse(localStorage.getItem('ffx-settings')) || {}; } catch { /* няма */ }
   const save = () => fetch(`${SERVER}/inputs?name=${encodeURIComponent(name)}`, {
     method: 'POST',
-    body: JSON.stringify({ name, settings, beganAt: state.beganAt, steps: state.step, runTime: state.runTime,
+    body: JSON.stringify({ name, settings, from, beganAt: state.beganAt, steps: state.step, runTime: state.runTime,
       won: !!state.won, finished: !!state.finished, runs }),
   }).catch(() => {});
   const timer = setInterval(() => { save(); if (state.finished) clearInterval(timer); }, 2000);
@@ -43,11 +45,13 @@ export async function replay(ffx, name) {
   const rec = await fetch(`tools/inputs/${encodeURIComponent(name)}.json?t=${Date.now()}`).then(r => r.json());
   const values = [];
   for (const [v, n] of rec.runs) for (let i = 0; i < n; i++) values.push(v);
+  // по-старите записи нямат `from`: изчислява се от броя стъпки при последното записване
+  const from = rec.from ?? Math.max(0, rec.steps - values.length);
   const { car, state } = ffx;
   ffx.replay = rec;
   ffx.onStep = step => {
     if (rec.beganAt != null && step === rec.beganAt && state.beganAt == null) ffx.begin();
-    const v = values[step] ?? 0;
+    const v = values[step - from] ?? 0;
     KEYS.forEach((k, i) => { car.keys[k] = v & (1 << i) ? 1 : 0; });
     const paused = !!(v & PAUSE);
     if (state.started && !state.finished && paused !== state.paused) {
@@ -56,5 +60,5 @@ export async function replay(ffx, name) {
     }
   };
   ffx.replayReady = true;
-  console.log(`повторение на „${name}“: ${values.length} стъпки, PLAY на ${rec.beganAt}`);
+  console.log(`повторение на „${name}“: ${values.length} стъпки от ${from}, PLAY на ${rec.beganAt}`);
 }

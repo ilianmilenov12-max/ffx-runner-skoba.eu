@@ -160,3 +160,30 @@ export function reelOverlay(ctx, t, ffx) {
     mono(ctx, 'на телефон и компютър', { y: 1110, size: 36, t, at: END + 1.1, until: 99, bg: 'transparent' });
   }
 }
+
+/** Рийлът от записаното каране (run1, 05.11.2026): два откъса — джипът блъска (0–7,2 s) и финалът
+ *  с бариерата на прелеза (7,2–16,4 s). `start` на втория откъс е 7.2, затова времената са общи. */
+export function runOverlay(ctx, t, ffx) {
+  const END = 13.0;
+  if (t < END) hud(ctx, ffx);
+
+  block(ctx, [['Помните ли'], ['Shockwave', INK, YELLOW], ['игрите?']], { y: 420, size: 170, t, at: 0.2, until: 3.2 });
+
+  const y2 = block(ctx, [['FFX Runner'], ['от 2000-те.']], { y: 440, size: 170, t, at: 3.4, until: 7.2 });
+  mono(ctx, 'Shockwave спря да работи през 2019.', { y: y2 + 60, t, at: 4.1, until: 7.2 });
+
+  const y3 = block(ctx, [['Пренесох я'], ['в браузъра.', INK, YELLOW]], { y: 440, size: 170, t, at: 7.4, until: 10.4 });
+  mono(ctx, 'Без плъгини. И на телефон.', { y: y3 + 60, t, at: 8.0, until: 10.4 });
+
+  if (t >= END) {
+    const k = out3(P(t, END, END + 0.4));
+    ctx.save();
+    ctx.globalAlpha = 0.86 * k;
+    ctx.fillStyle = INK;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+    block(ctx, [['Играйте'], ['безплатно', INK, YELLOW]], { y: 520, size: 190, t, at: END + 0.2, until: 99 });
+    mono(ctx, 'ffx.skoba.eu', { y: 1010, size: 64, t, at: END + 0.8, until: 99, color: INK, bg: YELLOW });
+    mono(ctx, 'на телефон и компютър', { y: 1110, size: 36, t, at: END + 1.1, until: 99, bg: 'transparent' });
+  }
+}

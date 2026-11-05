@@ -7,8 +7,8 @@
 // точка и продължава оттам. Затова изглежда, че познава града.
 
 import * as THREE from 'three';
-import { CPU_DRIVE, CAR_SIZE, RIDE_HEIGHT } from './params.js?v=168';
-import { Chaser } from './chaser.js?v=168';
+import { CPU_DRIVE, CAR_SIZE, RIDE_HEIGHT } from './params.js?v=169';
+import { Chaser } from './chaser.js?v=169';
 
 const DEG = 180 / Math.PI;
 
